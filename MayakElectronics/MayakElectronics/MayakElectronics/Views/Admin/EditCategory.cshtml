@@ -1,0 +1,126 @@
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@using ValueType = MayakElectronics.Models.ValueType
+@model Category
+
+@{
+    ViewBag.Title = "Admin Panel";
+    Layout = "_AdminLayout";
+}
+
+@using (Html.BeginForm("CategoryEdit", "Admin", FormMethod.Post,
+     new {enctype = "multipart/form-data"}))
+{
+     <div class="container">
+         <div class="form-group">
+             <div class="control-group" id="fields">
+                 <br/>
+                 <label class="control-label" for="field2">Name</label>
+                 @if (Model.Name == null)
+                 {
+                     @Html.TextBox("Name", null,
+                         new {@class = "form-control", placeholder = "Category Name"})
+                 }
+                 else
+                 {
+                     @Html.Hidden("Name", Model.Name)
+                     <h3>@Model.Name</h3>
+                 }
+                 <br/>
+                 <label class="control-label" for="field1">Characteristics</label>
+                 <div class="controls" id="controls">
+                     @for (var i = 0; i < Model.Characteristics.Count; i++)
+                     {
+                         <div class="entry input-group" id="entry">
+                             @Html.Hidden($"Characteristics[{i}].Id", Model.Characteristics[i].Id)
+                             @Html.TextBox($"Characteristics[{i}].Name", Model.Characteristics[i].Name,
+                                 new {@class = "form-control", placeholder = "Characteristic Name"})
+                             <br/><br/>
+                             @Html.ValidationMessage($"Characteristics[{i}].Name")
+                             @Html.DropDownList($"Characteristics[{i}].Type",
+                                 new SelectList(new[] {ValueType.number, ValueType.@string},
+                                     Model.Characteristics[i].Type),
+                                 null,
+                                 new {@class = "form-control"})
+                             <span class="input-group-btn">
+                                 <button class="btn btn-success btn-add" type="button">
+                                     <span class="glyphicon glyphicon-plus"></span>
+                                 </button>
+                             </span>
+                         </div>
+                     }
+                     <br>
+                     <small>Press <span class="glyphicon glyphicon-plus gs"></span> to add more option values</small>
+                 </div>
+             </div>
+         </div>         
+        <div class="panel-footer">
+            <input type="submit" value="Save" class="btn btn-primary"/>
+            @Html.ActionLink("Go back to admin panel", "Index", null, new
+            {
+                @class = "btn btn-default"
+            })
+        </div>
+     </div>
+}
+<input type="hidden" id="totalContacts" value="1" />
+
+
+
+
+<!-- Script for dynamic input field -->
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+<script>
+$(function()
+{
+     $(document).on('click', '.btn-add', function(e)
+     {
+          e.preventDefault();
+          var tc = parseInt($("#totalContacts").val());
+
+          var controlForm = $('.controls'),
+              currentEntry = $(this).parents('.entry:first').clone();
+          currentEntry.find('input').each(function()
+                                      {
+                                        this.name = this.name.replace(/[0-9]/g, tc);
+                                      });      
+          currentEntry.find('select').each(function()
+                                        {
+                                          this.name = this.name.replace(/[0-9]/g, tc);
+                                        });      
+          
+          
+          var newEntry = $(currentEntry.clone()).appendTo(controlForm);
+          tc++;
+          $("#totalContacts").val(tc);
+
+          // newEntry.find('input').val('');
+          controlForm.find('.entry:not(:last) .btn-add')
+              .removeClass('btn-add')//.addClass('btn-remove')
+              .removeClass('btn-success');//.addClass('btn-danger')
+              //.html('<span class="glyphicon glyphicon-minus"></span>');
+              });
+      // }).on('click', '.btn-remove', function(e)
+      // {
+      //     $(this).parents('.entry:first').remove();
+      //
+      //     e.preventDefault();
+      //     return false;
+      // });
+});
+
+</script>
+<style>
+.entry:not(:first-of-type)
+{
+      margin-top: 10px;
+}
+
+.glyphicon
+{
+      font-size: 12px;
+}
+</style>

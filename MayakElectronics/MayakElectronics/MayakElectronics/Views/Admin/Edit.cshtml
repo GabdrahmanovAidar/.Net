@@ -1,0 +1,413 @@
+﻿@using System.Linq
+@using ValueType = MayakElectronics.Models.ValueType
+@model IComponents
+
+@{
+    ViewBag.Title = "Admin Panel";
+    Layout = "_AdminLayout";
+}
+
+<div class="panel">
+    <div class="panel-heading">
+        <h3>@Model.Name</h3>
+    </div>
+    @using (Html.BeginForm($"{Model.GetType().Name}Edit", "Admin",
+        FormMethod.Post, new {enctype = "multipart/form-data"}))
+    {
+        <div class="panel-body">
+            @{
+                var imageId = -1;
+            }
+            @foreach (var property in Model.GetType().GetProperties())
+            {
+                if(property.CanWrite)
+                {
+                    switch (property.Name)
+                    {
+                        case "Id":
+                            imageId = (int) property.GetValue(Model);
+                            //TODO: Be Carefull
+                            @Html.HiddenFor(m => (m as Product).Id)
+                            break;
+                        case "ImageData":
+                            <div class="form-group">
+                                <div style="position:relative;">
+                                    <label>Картинка</label>
+                                    <a class='btn' href='javascript:;'>
+                                        Выберите файл...
+                                        <input type="file" name="Image" size="40"
+                                               style="position:absolute;z-index:2;top:0;
+                                left:0;filter: alpha(opacity=0); opacity:0;
+                                background-color:transparent;color:transparent;"
+                                               onchange='$("#upload-file-info").html($(this).val());'>
+                                    </a>
+                                    <span class='label label-info' id="upload-file-info"></span>
+                                </div>
+                                @if ((byte[]) property.GetValue(Model) == null)
+                                {
+                                    <div class="form-control-static">No Image</div>
+                                }
+                                else
+                                {
+                                    <img class="img-thumbnail" width="150" height="150"
+                                         src="@Url.Action("GetImage", "Admin",
+                                                  new {productId = imageId})"/>
+                                }
+                            </div>
+                            break;
+                        case "ImageMimeType":
+                        case "CategoryName":
+                        case "Products":
+                        case "Characteristics":
+                        case "StoreLocations":
+                        case "CartItems":
+                        case "Rate":
+                        case "Hide":    
+                        case "Reviews":    
+                        case "CharValues":    
+                            // Ничего не делать
+                            break;
+                        default:
+                            <div class="form-group">
+                                <label>@property.Name</label>
+                                @switch (property.Name)
+                                {
+                                    case "Description":
+                                        @Html.TextArea(property.Name,
+                                            null,
+                                            new {@class = "form-control", rows = 5})
+                                        break;
+                                    case "Price":
+                                        @Html.TextBox(property.Name, property.GetValue(Model).ToString().Replace(',', '.'),
+                                            new
+                                            {
+                                                type = "number", min = "0",
+                                                step = "0.01", @class = "form-control"
+                                            })
+                                        break;
+                                    case "Category":
+                                        @Html.DropDownList(property.Name,
+                                            (IEnumerable<SelectListItem>) ViewBag.myCategories ?? 
+                                            new SelectList(new string[0]),
+                                            "Choose Category",
+                                            new {@class = "form-control", id="dropdownlist"})
+                                        if(ViewData["_Characteristics"] == null) { break;}
+                                        var characteristics = ((IEnumerable<Characteristic>) ViewData["_Characteristics"]).ToList();
+                                        var charValues = ((IEnumerable<CharValue>) ViewData["_CharValues"]).ToList();                               
+                                        for (var i = 0; i < characteristics.Count; i++)
+                                        {
+                                            <br/>
+                                            <label>@characteristics[i].Name</label>
+                                            if (charValues.Count == 0)
+                                            {
+                                                @Html.Hidden($"CharValues[{i}].Characteristic.Id", characteristics[i].Id)
+                                                @Html.Hidden($"CharValues[{i}].Characteristic.Name", characteristics[i].Name)
+                                                if (characteristics[i].Type == ValueType.@string)
+                                                {
+                                                    @Html.TextBox($"CharValues[{i}].strValue", null,
+                                                        new {@class = "form-control"})
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBox($"CharValues[{i}].numValue", null,
+                                                        new {@class = "form-control", type = "number"})
+                                                }
+                                            }
+                                            else
+                                            {
+                                                var charValue = charValues.First(cv => cv.Characteristic == characteristics[i]);
+                                                @Html.Hidden($"CharValues[{i}].Id", charValue.Id)
+                                                @Html.Hidden($"CharValues[{i}].Characteristic.Id", characteristics[i].Id)
+                                                @Html.Hidden($"CharValues[{i}].Characteristic.Name", characteristics[i].Name)
+                                                if (characteristics[i].Type == ValueType.@string)
+                                                {
+                                                    @Html.TextBox($"CharValues[{i}].strValue", charValue.strValue,
+                                                        new {@class = "form-control"})
+                                                }
+                                                else
+                                                {
+                                                    @Html.TextBox($"CharValues[{i}].numValue", charValue.numValue.ToString().Replace(',', '.'),
+                                                        new {@class = "form-control", type = "number"})
+                                                }
+                                            }
+                                        }
+                                        break;
+                                    default:
+                                        @Html.TextBox(property.Name, null,
+                                            new {@class = "form-control"})
+                                        break;
+                                }
+                                @Html.ValidationMessage(property.Name)
+                            </div>
+                            break;
+                    }
+                }
+                else
+                {
+                    <div>@property.GetValue(Model)</div>
+                }
+            }
+        </div>
+        <div class="panel-footer">
+            <input type="submit" value="Save" class="btn btn-primary"/>
+            @Html.ActionLink("Go back to admin panel", "Index", null, new
+            {
+                @class = "btn btn-default"
+            })
+        </div>
+    }
+</div>
+
+@* <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script> *@
+@* <select id="dropdownlist"> *@
+@*   <option>Select...</option> *@
+@*   <option value="1">1</option> *@
+@*   <option value="2">2</option> *@
+@*   <option value="3">3</option> *@
+@*   <option value="4">4</option> *@
+@*   <option value="5">5</option> *@
+@* </select> *@
+@* <div id="inputArea"></div> *@
+@* *@
+@* <script> *@
+@* $("#dropdownlist").change(function () { *@
+@*   var numInputs = $(this).val(); *@
+@*   $("#inputArea").html(""); *@
+@*   for (var i = 0; i < numInputs; i++) *@
+@*     $("#inputArea").append('<input name="inputs[]" /><br/>'); *@
+@* }); *@
+@* </script> *@
+
+
+
+
+@* @using System.ComponentModel.DataAnnotations *@
+@* @using System.Diagnostics *@
+@* @using Force.Infrastructure *@
+@* @using Microsoft.EntityFrameworkCore *@
+@* @{ *@
+@*     ViewBag.Title = "Админ панель: редактирование товара"; *@
+@*     Layout = "_AdminLayout"; *@
+@* } *@
+@* <div class="panel"> *@
+@*     <div class="panel-heading"> *@
+@*         <h3>Редактирование товара «@Model.GetType().Name»</h3> *@
+@*     </div> *@
+@*     <p>Способ без Expression</p> *@
+@*     @{ *@
+@*         var stopWatch = new Stopwatch(); *@
+@*         stopWatch.Start(); *@
+@*     } *@
+@*     @using (Html.BeginForm($"{Model.GetType().Name}Edit", "Admin", *@
+@*         FormMethod.Post, new {enctype = "multipart/form-data"})) *@
+@*     { *@
+@*         <div class="panel-body"> *@
+@*             @{ *@
+@*                 var imageId = -1; *@
+@*             } *@
+@*             @foreach (var property in Model.GetType().GetProperties()) *@
+@*             { *@
+@*                 if(property.CanWrite) *@
+@*                 { *@
+@*                     switch (property.Name) *@
+@*                     { *@
+@*                         case "Id": *@
+@*                             imageId = (int) property.GetValue(Model); *@
+@*                             break; *@
+@*                         case "ImageData": *@
+@*                             <div class="form-group"> *@
+@*                                 <div style="position:relative;"> *@
+@*                                     <label>Картинка</label> *@
+@*                                     <a class='btn' href='javascript:;'> *@
+@*                                         Выберите файл... *@
+@*                                         <input type="file" name="Image" size="40" *@
+@*                                                style="position:absolute;z-index:2;top:0; *@
+@*                                 left:0;filter: alpha(opacity=0); opacity:0; *@
+@*                                 background-color:transparent;color:transparent;" *@
+@*                                                onchange='$("#upload-file-info").html($(this).val());'> *@
+@*                                     </a> *@
+@*                                     <span class='label label-info' id="upload-file-info"></span> *@
+@*                                 </div> *@
+@*                                 @if ((byte[]) property.GetValue(Model) == null) *@
+@*                                 { *@
+@*                                     <div class="form-control-static">Нет картинки</div> *@
+@*                                 } *@
+@*                                 else *@
+@*                                 { *@
+@*                                     <img class="img-thumbnail" width="150" height="150" *@
+@*                                          src="@Url.Action("GetImage", "Admin", *@
+@*                                                   new {productId = imageId})"/> *@
+@*                                 } *@
+@*                             </div> *@
+@*                             break; *@
+@*                         case "ImageMimeType": *@
+@*                             // Ничего не делать *@
+@*                             break; *@
+@*                         default: *@
+@*                             <div class="form-group"> *@
+@*                                 <label>@property.Name</label> *@
+@*                                 @switch (property.Name) *@
+@*                                 { *@
+@*                                     case "Description": *@
+@*                                         @Html.TextArea(property.Name, *@
+@*                                             null, *@
+@*                                             new {@class = "form-control", rows = 5}) *@
+@*                                         break; *@
+@*                                     case "Price": *@
+@*                                         @Html.TextBox(property.Name, null, *@
+@*                                             new *@
+@*                                             { *@
+@*                                                 type = "number", min = "0", *@
+@*                                                 value = property.GetValue(Model).ToString(), *@
+@*                                                 step = "0.01", @class = "form-control" *@
+@*                                             }) *@
+@*                                         break; *@
+@*                                     case "Category": *@
+@*                                         @Html.DropDownList(property.Name, *@
+@*                                             new SelectList(ViewBag.Categories), *@
+@*                                             "Выберите категорию", *@
+@*                                             new {@class = "form-control"}) *@
+@*                                         break; *@
+@*                                     default: *@
+@*                                         @Html.TextBox(property.Name, null, *@
+@*                                             new {@class = "form-control"}) *@
+@*                                         break; *@
+@*                                 } *@
+@*                                 @Html.ValidationMessage(property.Name) *@
+@*                             </div> *@
+@*                             break; *@
+@*                     } *@
+@*                 } *@
+@*                 else *@
+@*                 { *@
+@*                     <div>@property.GetValue(Model)</div> *@
+@*                 } *@
+@*             } *@
+@*         </div> *@
+@*         <div class="panel-footer"> *@
+@*             <input type="submit" value="Сохранить" class="btn btn-primary"/> *@
+@*             @Html.ActionLink("Отменить изменения и вернуться к списку", "Index", null, new *@
+@*             { *@
+@*                 @class = "btn btn-default" *@
+@*             }) *@
+@*         </div> *@
+@*     } *@
+@*     @{ *@
+@*         stopWatch.Stop(); *@
+@*         var ts = stopWatch.Elapsed; *@
+@*         <p>@String.Format("Runtime : {0:00}:{1:00}:{2:00}.{3:00}", *@
+@*                   ts.Hours, ts.Minutes, ts.Seconds, *@
+@*                   ts.Milliseconds)</p> *@
+@*     } *@
+@* </div> *@
+@* <div class="panel"> *@
+@*     <div class="panel-heading"> *@
+@*         <h3>Редактирование товара «@Model.GetType().Name»</h3> *@
+@*     </div> *@
+@*     <p>Способ c Expression</p> *@
+@*     @{ *@
+@*         var stopWatch2 = new Stopwatch(); *@
+@*         stopWatch2.Start(); *@
+@*     } *@
+@*     @using (Html.BeginForm($"{Model.GetType().Name}Edit", "Admin", *@
+@*         FormMethod.Post, new {enctype = "multipart/form-data"})) *@
+@*     { *@
+@*         <div class="panel-body"> *@
+@*             @{ *@
+@*                 var imageId = -1; *@
+@*             } *@
+@*             @foreach (var property in FastTypeInfo<Product>.PublicProperties) *@
+@*             { *@
+@*                 if(property.CanWrite) *@
+@*                 { *@
+@*                     switch (property.Name) *@
+@*                     { *@
+@*                         case "Id": *@
+@*                             imageId = (int) property.GetValue(Model); *@
+@*                             break; *@
+@*                         case "ImageData": *@
+@*                             <div class="form-group"> *@
+@*                                 <div style="position:relative;"> *@
+@*                                     <label>Картинка</label> *@
+@*                                     <a class='btn' href='javascript:;'> *@
+@*                                         Выберите файл... *@
+@*                                         <input type="file" name="Image" size="40" *@
+@*                                                style="position:absolute;z-index:2;top:0; *@
+@*                                 left:0;filter: alpha(opacity=0); opacity:0; *@
+@*                                 background-color:transparent;color:transparent;" *@
+@*                                                onchange='$("#upload-file-info").html($(this).val());'> *@
+@*                                     </a> *@
+@*                                     <span class='label label-info' id="upload-file-info"></span> *@
+@*                                 </div> *@
+@*                                 @if ((byte[]) property.GetValue(Model) == null) *@
+@*                                 { *@
+@*                                     <div class="form-control-static">Нет картинки</div> *@
+@*                                 } *@
+@*                                 else *@
+@*                                 { *@
+@*                                     <img class="img-thumbnail" width="150" height="150" *@
+@*                                          src="@Url.Action("GetImage", "Admin", *@
+@*                                                   new {productId = imageId})"/> *@
+@*                                 } *@
+@*                             </div> *@
+@*                             break; *@
+@*                         case "ImageMimeType": *@
+@*                             // Ничего не делать *@
+@*                             break; *@
+@*                         default: *@
+@*                             <div class="form-group"> *@
+@*                                 <label>@property.Name</label> *@
+@*                                 @switch (property.Name) *@
+@*                                 { *@
+@*                                     case "Description": *@
+@*                                         @Html.TextArea(property.Name, *@
+@*                                             null, *@
+@*                                             new {@class = "form-control", rows = 5}) *@
+@*                                         break; *@
+@*                                     case "Price": *@
+@*                                         @Html.TextBox(property.Name, null, *@
+@*                                             new *@
+@*                                             { *@
+@*                                                 type = "number", min = "0", *@
+@*                                                 value = property.GetValue(Model).ToString(), *@
+@*                                                 step = "0.01", @class = "form-control" *@
+@*                                             }) *@
+@*                                         break; *@
+@*                                     case "Category": *@
+@*                                         @Html.DropDownList(property.Name, *@
+@*                                             new SelectList(ViewBag.Categories), *@
+@*                                             "Выберите категорию", *@
+@*                                             new {@class = "form-control"}) *@
+@*                                         break; *@
+@*                                     default: *@
+@*                                         @Html.TextBox(property.Name, null, *@
+@*                                             new {@class = "form-control"}) *@
+@*                                         break; *@
+@*                                 } *@
+@*                                 @Html.ValidationMessage(property.Name) *@
+@*                             </div> *@
+@*                             break; *@
+@*                     } *@
+@*                 } *@
+@*                 else *@
+@*                 { *@
+@*                     <div>@property.GetValue(Model)</div> *@
+@*                 } *@
+@*             } *@
+@*         </div> *@
+@*         <div class="panel-footer"> *@
+@*             <input type="submit" value="Сохранить" class="btn btn-primary"/> *@
+@*             @Html.ActionLink("Отменить изменения и вернуться к списку", "Index", null, new *@
+@*             { *@
+@*                 @class = "btn btn-default" *@
+@*             }) *@
+@*         </div> *@
+@*     } *@
+@*     @{ *@
+@*         stopWatch2.Stop(); *@
+@*         var ts2 = stopWatch2.Elapsed; *@
+@*         <p>@String.Format("Runtime : {0:00}:{1:00}:{2:00}.{3:00}", *@
+@*                   ts2.Hours, ts2.Minutes, ts2.Seconds, *@
+@*                   ts2.Milliseconds)</p> *@
+@*     } *@
+@* </div> *@

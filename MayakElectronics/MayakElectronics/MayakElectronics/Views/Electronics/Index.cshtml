@@ -1,0 +1,118 @@
+﻿<!doctype html>
+<html class="no-js" lang="en">
+
+<body>
+<div class="header-section section">
+    <!-- Header Category Start -->
+    <div class="header-category-section">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <!-- Header Category -->
+                    <div class="header-category">
+                        <!-- Category Toggle Wrap -->
+                        <div class="category-toggle-wrap d-block d-lg-none">
+                            <!-- Category Toggle -->
+                            <button class="category-toggle">Categories <i class="ti-menu"></i></button>
+                        </div>
+                        <!-- Category Menu -->
+                        <nav class="category-menu">
+                            <ul>
+                                @foreach (var category in (List<Category>) ViewData["CategoriesIndex"])
+                                {
+                                    <li>
+                                        @Html.ActionLink(category.Name, "ShopGrid", 
+                                            new { categoryName = category.Name })
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- Header Category End -->
+    <br/>
+</div>
+<!-- Header Section End -->
+
+<!-- Feature Product Section Start -->
+<div class="product-section section mb-70">
+    <div class="container">
+        <div class="row">
+            <!-- Section Title Start -->
+            <div class="col-12 mb-40">
+                <div class="section-title-one">
+                    <h1>NOVELTY</h1>
+                </div>
+            </div><!-- Section Title End -->
+            <!-- Product Tab Content Start -->
+            <div class="col-12">
+                <div class="tab-content">
+                    <!-- Tab Pane Start -->
+                    <div class="tab-pane fade show active" id="tab-one">
+                        <!-- Product Slider Wrap Start -->
+                        <div class="product-slider-wrap product-slider-arrow-one">
+                            <!-- Product Slider Start -->
+                            <div class="product-slider product-slider-4">
+                                @{ foreach (var product in Model)
+                                   {
+                                       <div class="col pb-20 pt-10">
+                                           <div class="ee-product">
+                                               <div class="image">
+                                                   <a href="@Url.Action("SingleProductDetails", "ProductDetails", new { productId = product.Id })" class="img">
+                                                       <img src="@Url.Action("GetImage", "ProductDetails", new { productId = product.Id })" width="120" height="300" />
+                                                   </a>
+                                                   @Html.ActionLink("Add To Cart", "AddToCart", "Cart", new
+                                                   {
+                                                       productId = product.Id
+                                                   }, new { @class = "btn btn-warning", id = "myLink", style="width:100%"})
+                                               </div>
+                                               <div class="content">
+                                                   <div class="category-title">
+                                                       @product.CategoryName
+                                                       <h5 class="title">@product.Name</h5>
+                                                   </div>
+                                                   <div class="price-ratting">
+                                                       <h5 class="price">@product.Price $</h5>
+                                                       <div class="ratting">
+                                                           @for (var j = 0; j < Math.Round(product.Rate); j++)
+                                                           {
+                                                               <i class="fa fa-star"></i>
+                                                           }
+                                                           @for (var j = 0; j < 5 - Math.Round(product.Rate); j++)
+                                                           {
+                                                               <i class="fa fa-star-o"></i>
+                                                           }
+                                                       </div>
+                                                   </div>
+                                               </div>
+                                           </div>
+                                       </div>
+                                   }
+                                }
+                            </div><!-- Product Slider End -->
+                        </div><!-- Product Slider Wrap End -->
+                    </div>
+                </div><!-- Product Tab Content End -->
+            </div>
+        </div>
+    </div>
+</div><!-- Feature Product Section End -->
+
+</body>
+
+</html>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+$('.btn-warning').click(function(e){
+    e.preventDefault();
+    $.ajax({
+        url:$(this).attr("href"), // comma here instead of semicolon   
+        success: function(){
+        alert("Product successfully has been added");  // or any other indication if you want to show
+        }
+    });
+});
+</script>

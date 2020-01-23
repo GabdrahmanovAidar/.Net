@@ -1,0 +1,247 @@
+﻿@using System.Globalization;
+@model OrderCourier
+
+<!doctype html>
+<html class="no-js" lang="en">
+<body>
+    <!-- Page Banner Section Start -->
+    <div class="page-banner-section section">
+        <div class="page-banner-wrap row row-0 d-flex align-items-center ">
+
+            <!-- Page Banner -->
+            <div class="col-lg-4 col-12 order-lg-2 d-flex align-items-center justify-content-center">
+                <div class="page-banner">
+                    <h1>Checkout</h1>
+                    <p>similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita</p>
+                    <div class="breadcrumb">
+                        <ul>
+                            <li>
+                                <a href="#">HOME</a>
+                            </li>
+                            <li>
+                                <a href="#">Shop</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Banner -->
+            <div class="col-lg-4 col-md-6 col-12 order-lg-1">
+                <div class="banner">
+                    <a href="#">
+                        <img src="~/assets/images/banner/banner-15.jpg" alt="Banner">
+                    </a>
+                </div>
+            </div>
+
+            <!-- Banner -->
+            <div class="col-lg-4 col-md-6 col-12 order-lg-3">
+                <div class="banner">
+                    <a href="#">
+                        <img src="~/assets/images/banner/banner-14.jpg" alt="Banner">
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div><!-- Page Banner Section End -->
+    <!-- Checkout Page Start -->
+    <div class="page-section section mt-90 mb-30">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+
+                    <!-- Checkout Form s-->
+                    <form asp-action="CourierDelivery" method="post" class="checkout-form">
+                        <div class="row row-40">
+
+                            <div class="col-lg-7 mb-20">
+
+                                <!-- Billing Address -->
+                                <div class="row">
+
+                                    <div class="row">
+
+                                        <div class="col-lg-10 col-12 ml-auto mr-auto">
+                                            <div class="single-product-tab-content tab-content">
+                                                <div class="tab-pane fade show active" id="pickup">
+                                                    <div class="single-product-specification">
+
+                                                        <div id="billing-form" class="mb-40">
+
+                                                            <h4><b>Who will pick up the order?</b></h4><br />
+                                                            <div class="row">
+
+                                                                <div class="col-md-6 col-12 mb-20">
+                                                                    <label asp-for="FirstName"></label>
+                                                                    <input asp-for="FirstName" placeholder="First Name">
+                                                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-12 mb-20">
+                                                                    <label asp-for="LastName"></label>
+                                                                    <input asp-for="LastName" placeholder="Last Name">
+                                                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                                                </div>
+
+
+                                                                <div class="col-md-6 col-12 mb-20">
+                                                                    <label asp-for="PhoneNumber"></label>
+                                                                    <input asp-for="PhoneNumber" placeholder="Phone number">
+                                                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                                                </div>
+
+                                                                <div class="col-md-6 col-12 mb-20">
+                                                                    <label asp-for="Email"></label>
+                                                                    <input value="@ViewBag.Email" asp-for="Email" placeholder="Email Address">
+                                                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                                                </div>
+
+                                                            </div>
+
+                                                            @{
+                                                                var context = new ElectronicsDbContext();
+                                                                var cities = context.Cities.ToList();
+                                                            }
+                                                            <div class="col-md-6 col-12 mb-20" id="button-wrapper">
+                                                                <label>City/Town</label>
+                                                                <div id="citySelect">
+                                                                    <select asp-for="City" id="cityOrder" class="browser-default custom-select" style="height: 30px">
+                                                                        @foreach (var city in cities)
+                                                                        {
+                                                                            <option value="@city.Name">@city.Name</option>
+                                                                        }
+                                                                    </select>
+                                                                    <br/>
+                                                                    <br/>
+                                                                    <div><button id="button">Write Another City</button></div>
+                                                                </div>
+                                                                <br/>
+                                                            </div>
+                                                            
+                                                            <script type="text/javascript">
+                                                                 $(document).ready(function () {
+                                                                     var city = getCookie('city');
+                                                                     $("#cityOrder").val(escape(city))
+                                                                 });
+                                                            </script>
+
+                                                            <br /><br /><br /><br /><br /><br /><br />
+
+                                                            <div class="col-12 mb-20">
+                                                                <label asp-for="Address"></label>
+                                                                <input asp-for="Address" placeholder="Address">
+                                                                <span asp-validation-for="Address" class="text-danger"></span>
+                                                            </div>
+
+                                                            @{
+                                                                var date = DateTime.Now;
+                                                                var day = date.Day;
+                                                            }
+                                                            <div class="col-md-6 col-12 mb-20">
+                                                                <label asp-for="DateDay">Date</label>
+                                                                <select asp-for="DateDay" class="nice-select">
+                                                                    <option>@string.Format("{0}.{1}.{2}", day + 1, date.Month, date.Year)</option>
+                                                                    <option>@string.Format("{0}.{1}.{2}", day + 2, date.Month, date.Year)</option>
+                                                                    <option>@string.Format("{0}.{1}.{2}", day + 3, date.Month, date.Year)</option>
+                                                                    <option>@string.Format("{0}.{1}.{2}", day + 4, date.Month, date.Year)</option>
+                                                                    <option>@string.Format("{0}.{1}.{2}", day + 5, date.Month, date.Year)</option>
+                                                                    <option>@string.Format("{0}.{1}.{2}", day + 6, date.Month, date.Year)</option>
+                                                                    <option>@string.Format("{0}.{1}.{2}", day + 7, date.Month, date.Year)</option>
+                                                                </select>
+                                                                <span asp-validation-for="DateDay" class="text-danger"></span>
+                                                            </div>
+
+                                                            <div class="col-md-6 col-12 mb-20">
+                                                                <label asp-for="DateTime">Time</label>
+                                                                <select asp-for="DateTime" class="nice-select">
+                                                                    <option>from 10 to 12 hours</option>
+                                                                    <option>from 13 to 15 hours</option>
+                                                                    <option>from 16 to 19 hours</option>
+                                                                </select>
+                                                                <span asp-validation-for="DateTime" class="text-danger"></span>
+                                                            </div>
+
+                                                            <h4 class="checkout-title">Payment Method</h4>
+                                                            <select asp-for="PaymentMethod" class="nice-select">
+                                                                <option>Paypal</option>
+                                                                <option>Cash to courier</option>
+                                                            </select>
+                                                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+
+                                                        </div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-5">
+                                <div class="row">
+
+                                    <!-- Cart Total -->
+                                    <div class="col-12 mb-60">
+
+                                        <h4 class="checkout-title">Cart Total</h4>
+
+                                        <div class="checkout-cart-total">
+
+                                            <h4>Product <span>Total</span></h4>
+
+                                            <ul>
+                                                @foreach (var product in ViewBag.Items)
+                                                {
+                                                    <li>@product.Product.Name (@product.Amount)<span>@(product.Product.Price * product.Amount)</span></li>
+                                                }
+
+                                            </ul>
+
+                                            <h4>Grand Total <span>@ViewBag.Total</span></h4>
+
+                                        </div>
+                                        <input type="submit" style="width:auto" class="btn btn-success place-order" value="Place Order" />
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Checkout Page End -->
+
+</body>
+
+</html>
+
+<script>
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return unescape(c.substring(nameEQ.length,c.length));
+    }
+    return null;
+}
+
+$(function(){
+    $("#button-wrapper button").click(function(){
+
+        $("#button-wrapper").html('<label>City/Town</label> <br/> <input type="text" name="City" />');
+        $("#button-wrapper input").focus();
+    });
+});
+</script>

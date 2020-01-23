@@ -1,0 +1,352 @@
+﻿﻿@using System.Net
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - E&E - Electronics eCommerce </title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="~/assets/images/favicon.ico">
+    @* <script src="http://www.google.com/jsapi?key=YOURAPIKEY" type="text/javascript"></script> *@
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+
+    @* <environment include="Development"> *@
+        <link rel="stylesheet" href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.css")" />
+        <link rel="stylesheet" href="@Url.Content("~/css/site.css")" />
+
+        <link rel="stylesheet" href="@Url.Content("~/assets/css/bootstrap.min.css")">
+
+        <!-- Icon Font CSS -->
+        <link rel="stylesheet" href="@Url.Content("~/assets/css/icon-font.min.css")">
+
+        <!-- Plugins CSS -->
+        <link rel="stylesheet" href="@Url.Content("~/assets/css/plugins.css")">
+
+        <!-- Main Style CSS -->
+        <link rel="stylesheet" href="@Url.Content("~/assets/css/style.css")">
+
+        <!-- Modernizer JS -->
+        <script src="@Url.Content("~/assets/js/vendor/modernizr-2.8.3.min.js")"></script>
+    @* </environment> *@
+    @* <environment exclude="Development"> *@
+        <link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css"
+              asp-fallback-href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap.min.css")"
+              asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
+        <link rel="stylesheet" href="@Url.Content("~/css/site.min.css")" asp-append-version="true" />
+    @* </environment> *@
+</head>
+<body>
+  
+    <!-- Header Section Start -->
+    <div class="header-section section">
+
+        <!-- Header Top Start -->
+        <div class="header-top header-top-one header-top-border pt-10 pb-10">
+            <div class="container">
+                <div class="row align-items-center justify-content-between">
+
+                    <div class="col mt-10 mb-10">
+                        <!-- Header Links Start -->
+                        <div class="header-links">
+                            @* <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script> *@
+                            @{
+                                var context = new ElectronicsDbContext();
+                                var cities = context.Cities.ToList();
+                            }
+                            <mini-profiler />
+                            <label>Chose City:</label>
+                            <select class="browser-default custom-select" style="height: 30px" id="citySelect"
+                                    onchange="setCookie('city', this.value)">
+                                @* <option selected="selected" id="city1"></option> *@
+                                @foreach (var city in cities)
+                                {
+                                    <option>@city.Name</option>
+                                }
+                            </select>
+                            <h3 id="city"></h3>
+                            <label>Was Define</label>
+                            
+                            <script src="https://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
+                            <script type="text/javascript">
+                                $(document).ready(function () {
+                                    ymaps.ready(function () {
+                                        var geolocation = ymaps.geolocation.city;
+                                        var city = getCookie("city");
+                                        //$('#city1').html(c);
+                                        if(city == null){
+                                            c = send(geolocation);
+                                            if(c !== "Op's we cannot define your city")
+                                                setCookie('city', c);
+                                            $('#city').html(c);
+                                            $('#citySelect').val(escape(c));
+                                        }
+                                        else {
+                                            $('#city').html(city);
+                                            $('#citySelect').val(escape(city));
+                                        }
+                                    });
+                                });
+                            </script>
+
+                        </div><!-- Header Links End -->
+                    </div>
+
+                    <div class="col order-12 order-xs-12 order-lg-2 mt-10 mb-10">
+                        <!-- Header Advance Search Start -->
+                        <div class="header-advance-search">
+
+                            @using (Html.BeginForm("Search", "Electronics", FormMethod.Post))
+                            {
+                                <div class="input"><input type="text" placeholder="Search your product" name="text"></div>
+                                <div class="submit"><button><i class="icofont icofont-search-alt-1"></i></button></div>                                
+                            }
+
+                        </div><!-- Header Advance Search End -->
+                    </div>
+
+                    <div class="col order-2 order-xs-2 order-lg-12 mt-10 mb-10">
+                        <!-- Header Account Links Start -->
+                        <div class="header-account-links">
+                            @await Html.PartialAsync("LoginPartial")
+                        </div><!-- Header Account Links End -->
+                    </div>
+
+                </div>
+            </div>
+        </div><!-- Header Top End -->
+        <!-- Header Bottom Start -->
+        <div class="header-bottom header-bottom-one header-sticky">
+            <div class="container">
+                <div class="row align-items-center justify-content-between">
+
+                    <div class="col mt-15 mb-15">
+                        <!-- Logo Start -->
+                        <div class="header-logo">
+                            <a href="/Electronics/Index">
+                                <img src="~/assets/images/logo.png" alt="E&E - Electronics eCommerce Bootstrap4 HTML Template">
+                                <img class="theme-dark" src="~/assets/images/logo-light.png" alt="E&E - Electronics eCommerce Bootstrap4 HTML Template">
+                            </a>
+                        </div><!-- Logo End -->
+                    </div>
+
+                    <div class="col order-12 order-lg-2 order-xl-2 d-none d-lg-block">
+                        <!-- Main Menu Start -->
+                        <div class="main-menu">
+                            <nav>
+                                <ul>
+                                    <li class="active"><a href="/Electronics/Index">HOME</a></li>
+                                    <li class="active"><a href="/Electronics/ShopGrid">Shop</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div><!-- Main Menu End -->
+                    </div>
+
+                    <div class="col order-2 order-lg-12 order-xl-12">
+                        <!-- Header Shop Links Start -->
+                        <div class="header-shop-links">
+
+                            <!-- Cart -->
+                            <a asp-controller="Cart" asp-action="Index"><i class="ti-shopping-cart"></i></a>
+
+                        </div><!-- Header Shop Links End -->
+                    </div>
+
+                    <!-- Mobile Menu -->
+                    <div class="mobile-menu order-12 d-block d-lg-none col"></div>
+
+                </div>
+            </div>
+        </div><!-- Header Bottom End -->
+    </div>
+    <partial name="_CookieConsentPartial" />
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay"></div>
+
+    <div class="container body-content">
+        @RenderBody()
+    </div>
+    <!-- Footer Section Start -->
+    <div class="footer-section section bg-ivory">
+
+        <!-- Footer Top Section Start -->
+        <div class="footer-top-section section pt-90 pb-50">
+            <div class="container">
+
+                
+
+                <div class="row">
+
+                    <!-- Footer Widget Start -->
+                    <div class="col-lg-3 col-md-6 col-12 mb-40">
+                        <div class="footer-widget">
+
+                            <h4 class="widget-title">CONTACT INFO</h4>
+
+                            <p class="contact-info">
+                                <span>Phone</span>
+                                <a href="tel:01234567890">01234 567 890</a>
+                            </p>
+
+                            <p class="contact-info">
+                                <span>Web</span>
+                                <a href="mailto:info@example.com">info@example.com</a>
+                            </p>
+
+                        </div>
+                    </div><!-- Footer Widget End -->
+                    <!-- Footer Widget Start -->
+                    <div class="col-lg-3 col-md-6 col-12 mb-40">
+                        <div class="footer-widget">
+
+                            <h4 class="widget-title">CUSTOMER CARE</h4>
+
+                            <ul class="link-widget">
+                                <li><a href="#">About us</a></li>
+                                <li><a href="#">Features</a></li>
+                                <li><a href="#">My Account</a></li>
+                            </ul>
+
+                        </div>
+                    </div><!-- Footer Widget End -->
+                    <!-- Footer Widget Start -->
+                    <div class="col-lg-3 col-md-6 col-12 mb-40">
+                        <div class="footer-widget">
+
+                            <h4 class="widget-title">INFORMATION</h4>
+
+                            <ul class="link-widget">
+                                <li><a href="#">Track your order</a></li>
+                                <li><a href="#">Locate Store</a></li>
+                                <li><a href="#">Online Support</a></li>
+                            </ul>
+
+                        </div>
+                    </div><!-- Footer Widget End -->
+                    <!-- Footer Widget Start -->
+                    <div class="col-lg-3 col-md-6 col-12 mb-40">
+                        <div class="footer-widget">
+
+                            <h4 class="widget-title">LATEST TWEET</h4>
+
+                            <div class="footer-tweet"></div>
+
+                        </div>
+                    </div><!-- Footer Widget End -->
+
+                </div>
+
+            </div>
+        </div><!-- Footer Bottom Section Start -->
+
+    </div><!-- Footer Section End -->
+
+    @* <environment include="Development"> *@
+        <script src="@Url.Content("~/lib/jquery/dist/jquery.js")"></script>
+        <script src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.js")"></script>
+        <script src="@Url.Content("~/js/site.js")" asp-append-version="true"></script>
+
+        <!-- JS
+        ============================================ -->
+        @* <environment include="Development"> *@
+            <!-- jQuery JS -->
+            <script src="@Url.Content("~/assets/js/vendor/jquery-1.12.4.min.js")"></script>
+            <!-- Popper JS -->
+            <script src="@Url.Content("~/assets/js/popper.min.js")"></script>
+            <!-- Bootstrap JS -->
+            <script src="@Url.Content("~/assets/js/bootstrap.min.js")"></script>
+            <!-- Plugins JS -->
+            <script src="@Url.Content("~/assets/js/plugins.js")"></script>
+
+            <!-- Main JS -->
+            <script src="@Url.Content("~/assets/js/main.js")"></script>
+        @* </environment> *@
+    @* </environment> *@
+    @* <environment exclude="Development"> *@
+        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
+                asp-fallback-src="@Url.Content("~/lib/jquery/dist/jquery.min.js")"
+                asp-fallback-test="window.jQuery"
+                crossorigin="anonymous"
+                integrity="sha384-tsQFqpEReu7ZLhBV2VZlAu7zcOV+rXbYlF2cqB8txI/8aZajjp4Bqd+V6D5IgvKT">
+        </script>
+        <script src="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/bootstrap.min.js"
+                asp-fallback-src="@Url.Content("~/lib/bootstrap/dist/js/bootstrap.min.js")"
+                asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
+                crossorigin="anonymous"
+                integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa">
+        </script>
+        <script src="@Url.Content("~/js/site.min.js")" asp-append-version="true"></script>
+    @* </environment> *@
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
+
+<script  type='text/javascript'>
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return unescape(c.substring(nameEQ.length,c.length));
+    }
+    return null;
+}
+function setCookie(name, value){
+    $("#city").html(value);
+    $("#hidden").val(value);
+    document.cookie = name + "=" + escape(value);
+}
+
+function send(text){
+//var text = document.getElementById('text').value;
+var transl = [];
+    transl['А']='A';     transl['а']='a';
+    transl['Б']='B';     transl['б']='b';
+    transl['В']='V';     transl['в']='v';
+    transl['Г']='G';     transl['г']='g';
+    transl['Д']='D';     transl['д']='d';
+    transl['Е']='E';     transl['е']='e';
+    transl['Ё']='Yo';    transl['ё']='yo';
+    transl['Ж']='Zh';    transl['ж']='zh';
+    transl['З']='Z';     transl['з']='z';
+    transl['И']='I';     transl['и']='i';
+    transl['Й']='J';     transl['й']='j';
+    transl['К']='K';     transl['к']='k';
+    transl['Л']='L';     transl['л']='l';
+    transl['М']='M';     transl['м']='m';
+    transl['Н']='N';     transl['н']='n';
+    transl['О']='O';     transl['о']='o';
+    transl['П']='P';     transl['п']='p';
+    transl['Р']='R';     transl['р']='r';
+    transl['С']='S';     transl['с']='s';
+    transl['Т']='T';     transl['т']='t';
+    transl['У']='U';     transl['у']='u';
+    transl['Ф']='F';     transl['ф']='f';
+    transl['Х']='X';     transl['х']='x';
+    transl['Ц']='C';     transl['ц']='c';
+    transl['Ч']='Ch';    transl['ч']='ch';
+    transl['Ш']='Sh';    transl['ш']='sh';
+    transl['Щ']='Shh';    transl['щ']='shh';
+    transl['Ъ']='"';     transl['ъ']='"';
+    transl['Ы']='Y\'';    transl['ы']='y\'';
+    transl['Ь']='\'';    transl['ь']='';
+    transl['Э']='E\'';    transl['э']='e\'';
+    transl['Ю']='Yu';    transl['ю']='yu';
+    transl['Я']='Ya';    transl['я']='ya';
+
+    var result = '';
+    if(text == undefined) return "Op's we cannot define your city";
+    for(i=0;i<text.length;i++) {
+        if(transl[text[i]] !== undefined) { result += transl[text[i]]; }
+        else { result += text[i]; }
+    }
+    //document.getElementById('text').value = result;
+    return result;
+}
+</script>

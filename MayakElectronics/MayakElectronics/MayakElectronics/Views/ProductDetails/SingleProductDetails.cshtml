@@ -1,0 +1,228 @@
+﻿<!doctype html>
+<html class="no-js" lang="en">
+<body>
+    @model Review
+    <div class="product-section section mb-90">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 col-12 mb-50">
+                    <div class="image">
+                        <img src="@Url.Action("GetImage", "ProductDetails", new {productId = Model.Product.Id})" alt="image" width="600" height="390">
+                    </div>
+                </div>
+                <div class="col-lg-6 col-12 mb-40">
+                    <div class="single-product-content">
+                        <div class="head-content">
+                            <div class="category-title">
+                                <h4 class="title">@Model.Product.Name</h4>
+                            </div>
+                            <h4 class="price">$@Model.Product.Price</h4>
+                        </div><br>
+                        <h3 class="ratting">Ratting: @Model.Product.Rate out of 5</h3>
+                        <h3 class="ratting">Total reviews: @(Model.Product.Reviews?.Count ?? 0)</h3>
+                        @for (var i = 0; i < 5; i++)
+                        {
+                            <div class="ratting-star">
+                                @for (var j = 0; j < 5 - i; j++)
+                                {
+                                    <i class="fa fa-star"></i>
+                                }
+                                @for (var j = 0; j < i; j++)
+                                {
+                                    <i class="fa fa-star-o"></i>
+                                }
+                            <span>(@Model.Product.Reviews.Count(r => r.Rate == 5 - i))</span>
+                            </div>
+                        }
+                        <br>
+                        <div class="actions">
+                            @Html.ActionLink("Add To Cart", "AddToCart", "Cart", new
+                            {
+                                productId = Model.Product.Id
+                            }, new { @class = "btn btn-warning", id = "myLink", style="width:100%"})
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12 col-12 ml-auto mr-auto">
+                    <ul class="single-product-tab-list nav">
+                        <li><a href="#product-description" class="active" data-toggle="tab">Description</a></li>
+                        <li><a href="#product-specifications" data-toggle="tab">Characteristics</a></li>
+                        <li><a href="#product-reviews" data-toggle="tab">Reviews</a></li>
+                    </ul>
+                    <div class="single-product-tab-content tab-content">
+                        <div class="tab-pane fade show active" id="product-description">
+                            <div class="row">
+                                <div class="single-product-description-content">
+                                    <p>@Model.Product.Description</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="product-specifications">
+                            <div class="single-product-specification">
+                                <ul>
+                                    @{
+                                        foreach (var e in Model.Product.CharValues)
+                                        {
+                                            if (e.Characteristic.Type == 0)
+                                            {
+
+                                                var c = e.Characteristic.Name + ": " + e.strValue;
+                                                <li>@c</li>
+                                            }
+                                            else
+                                            {
+                                                var c = e.Characteristic.Name + ": " + e.numValue;
+                                                <li>@c</li>
+                                            }
+                                        }
+                                    }
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="product-reviews">
+                            <div class="product-ratting-wrap">
+                                <div class="rattings-wrapper">
+                                    @for (var i = Model.Product.Reviews.Count - 1; i >= 0; i--)
+                                    {
+                                        <div class="sin-rattings">
+                                            <div class="ratting-author">
+                                                <h3>@Model.Product.Reviews[i].Name</h3>
+                                                <div class="ratting-star">
+                                                    @for (var j = 0; j < Model.Product.Reviews[i].Rate; j++)
+                                                    {
+                                                        <i class="fa fa-star"></i>
+                                                    }
+                                                    @for (var j = 0; j < 5 - Model.Product.Reviews[i].Rate; j++)
+                                                    {
+                                                        <i class="fa fa-star-o"></i>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <p>@Model.Product.Reviews[i].Content</p>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="ratting-form-wrapper fix">
+                                    @if (ViewBag.Flag)
+                                    {
+                                        <h3>ADD REVIEW</h3>
+                                        <form method="post">
+                                            <div class="ratting-form row">
+                                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                                <input type="hidden" value="@Model.Product.Id" name="productId" />
+                                                <div class="col-12 mb-15">
+                                                    <label>Ratting:</label>
+                                                    <select name="ratting">
+                                                        <option value="1">1</option>
+                                                        <option value="2">2</option>
+                                                        <option value="3">3</option>
+                                                        <option value="4">4</option>
+                                                        <option value="5">5</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-12 mb-15">
+                                                    <label asp-for="Content">Content:</label>
+                                                    <textarea asp-for="Content" placeholder="Your review"></textarea>
+                                                    <span asp-validation-for="Content" class="text-danger"></span>
+                                                </div>
+                                                <div class="col-12">
+                                                    <input value="Add review" type="submit">
+                                                </div>
+                                            </div>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12 mb-40">
+                    <div class="section-title-one">
+                        <h1>ARE BOUGHT WITH THIS PRODUCT</h1>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="product-slider-wrap product-slider-arrow-one">
+                        <div class="product-slider product-slider-4">
+                            @using MayakElectronics.Database;
+                            @{
+                                var efProductRepository = new EfProductRepository();
+                                var ids = efProductRepository.AreBoughts
+                                    .Where(ab => ab.FirstProductId == Model.Product.Id)
+                                    .OrderByDescending(ab => ab.Count)
+                                    .Select(ab => ab.SecondProductId)
+                                    .ToList();
+                                if (ids.Count > 4)
+                                {
+                                    ids = ids
+                                        .Take(4)
+                                        .ToList();
+                                }
+                                var areBoughts = new List<Product>();
+                                foreach (var e in ids)
+                                {
+                                    areBoughts.Add(efProductRepository.Products.First(p => p.Id == e));
+                                }
+                                foreach (var product in areBoughts)
+                                {
+                                    <div class="col pb-20 pt-10">
+                                        <div class="ee-product">
+                                            <div class="image">
+                                                <a href="@Url.Action("SingleProductDetails", "ProductDetails", new {productId = product.Id})" class="img">
+                                                    <img src="@Url.Action("GetImage", "ProductDetails", new {productId = product.Id})" width="120" height="300" alt="image"/>
+                                                </a>
+                                                @Html.ActionLink("Добавить в корзину", "AddToCart", "Cart", new
+                                                {
+                                                    productId = product.Id
+                                                }, new {@class = "btn btn-warning", id = "myLink", style = "width:100%"})
+                                            </div>
+                                            <div class="content">
+                                                <div class="category-title">
+                                                    <h5 class="category">@product.CategoryName</h5>
+                                                    <h5 class="title">@product.Name</h5>
+                                                </div>
+                                                <div class="price-ratting">
+                                                    <h5 class="price">@product.Price руб.</h5>
+                                                    <div class="ratting">
+                                                        @for (var j = 0; j < Math.Round(product.Rate); j++)
+                                                        {
+                                                            <i class="fa fa-star"></i>
+                                                        }
+                                                        @for (var j = 0; j < 5 - Math.Round(product.Rate); j++)
+                                                        {
+                                                            <i class="fa fa-star-o"></i>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+    $('.btn-warning').click(function (e) {
+        e.preventDefault();
+        $.ajax({
+            url: $(this).attr("href"), // comma here instead of semicolon
+            success: function () {
+                alert("Product was successfully added to cart.");  // or any other indication if you want to show
+            }
+        });
+    });
+</script>

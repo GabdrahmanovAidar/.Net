@@ -1,0 +1,97 @@
+﻿<!doctype html>
+<html class="no-js" lang="en">
+<body>
+    <!-- Page Banner Section Start -->
+    <div class="page-banner-section section">
+        <div class="page-banner-wrap row row-0 d-flex align-items-center ">
+
+            <!-- Page Banner -->
+            <div class="col-lg-4 col-12 order-lg-2 d-flex align-items-center justify-content-center">
+                <div class="page-banner">
+                    <h1>Checkout</h1>
+                    <p>similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita</p>
+                    <div class="breadcrumb">
+                        <ul>
+                            <li>
+                                <a href="#">HOME</a>
+                            </li>
+                            <li>
+                                <a href="#">Shop</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- Page Banner Section End -->
+    <!-- Checkout Page Start -->
+    <div class="page-section section mt-90 mb-30">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+
+                    <!-- Checkout Form s-->
+                    <form action="#" class="checkout-form">
+                        <div class="row row-40">
+
+                            <div class="col-lg-7 mb-20">
+
+                                <!-- Billing Address -->
+                                <div class="row">
+
+                                    <div class="row">
+
+                                        <div class="col-lg-10 col-12 ml-auto mr-auto">
+                                            <h2>Please select your type of order:</h2>
+                                            <ul class="list-group">
+                                                <li class="list-group-item"><a class="btn btn-primary" asp-action="Pickup" role="button">Pickup</a></li>
+                                                <li class="list-group-item"><a class="btn btn-primary"asp-action="CourierDelivery" role="button">Courier delivery</a></li>
+                                                @*<li class="list-group-item"><a class="btn btn-primary" asp-action="PostDelivery" role="button">Post delivery</a></li>*@
+                                            </ul>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="col-lg-5">
+                                <div class="row">
+
+                                    <!-- Cart Total -->
+                                    <div class="col-12 mb-60">
+
+                                        <h4 class="checkout-title">Cart Total</h4>
+
+                                        <div class="checkout-cart-total">
+
+                                            <h4>Product <span>Total</span></h4>
+
+                                            <ul>
+                                                @foreach (var product in ViewBag.Items)
+                                                {
+                                                    <li>@product.Product.Name (@product.Amount)<span>@(product.Product.Price * product.Amount)</span></li>
+                                                }
+
+                                            </ul>
+
+                                            <h4>Grand Total <span>@ViewBag.Total</span></h4>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Checkout Page End -->
+
+</body>
+
+</html>

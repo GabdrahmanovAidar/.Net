@@ -1,0 +1,150 @@
+﻿@using System.Collections
+@model MayakElectronics.Database.EfProductRepository
+
+@{
+    ViewBag.Title = "Админ панель";
+    Layout = "_AdminLayout";
+}
+
+@foreach(var prop in Model.GetType().GetProperties())
+{
+    if(prop.Name == "Reviews" || prop.Name == "AreBoughts") {continue;}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3>List of @prop.Name</h3>
+    </div>
+    <div class="panel-body">
+        <table class="table table-striped table-condensed table-bordered">
+            <tr>
+                @foreach (var propertyInfo in prop.PropertyType.GetGenericArguments()[0].GetProperties())
+                {
+                    switch (propertyInfo.Name)
+                    {
+                        case "Description":
+                        case "Category":
+                        case "ImageData":
+                        case "ImageMimeType":
+                        case "Products":
+                        case "CartItems":
+                        case "CharValues":
+                        case "Characteristics":
+                        case "StoreLocations":
+                        case "OrderDetails" :
+                        case "Hide":    
+                        case "UserId" :
+                        case "Reviews":
+                        case "PointOfIsssue" :
+                        case "OrderTotal" :    
+                            continue;
+                    }
+                    if (propertyInfo.Name == "Name")
+                    {
+                        <th>@propertyInfo.Name</th>
+                    }
+                    else
+                    {
+                        <th class="text-right">@propertyInfo.Name</th>
+                    }
+                }
+                @if (prop.Name != "OrderCouriers" && prop.Name != "OrderPickUps")
+                {
+                    <th class="text-center">Actions</th>
+                }
+            </tr>
+            @foreach (var it in (IEnumerable) prop.GetValue(Model))
+            {
+                var IsHidden = false;
+                var itemId = -1;
+                string name = null;
+                <tr>
+                    @foreach (var propertyInfo in it.GetType().GetProperties())
+                    {
+                        if (propertyInfo.Name == "Hide" && (bool) propertyInfo.GetValue(it) == true)
+                        {
+                            IsHidden = true;
+                            break;
+                        }
+                        switch (propertyInfo.Name)
+                        {
+                            case "Description": 
+                            case "Category": 
+                            case "ImageData": 
+                            case "ImageMimeType": 
+                            case "CartItems":
+                            case "CharValues":
+                            case "Characteristics":
+                            case "StoreLocations": 
+                            case "OrderDetails" :
+                            case "UserId" :
+                            case "PointOfIsssue" :
+                            case "Reviews":
+                            case "Hide":    
+                            case "OrderTotal" :
+                            case "Products": continue;
+                            case "OrderCourierId":
+                            case "OrderPickUpId": 
+                                <td>
+                                    @Html.ActionLink(propertyInfo.GetValue(it).ToString(),
+                                        "Edit", new
+                                        {
+                                            type = it.GetType().Name,
+                                            id=itemId,
+                                            name = propertyInfo.GetValue(it)
+                                        })
+                                </td>
+                                break;
+                            case "Name":
+                                name = propertyInfo.GetValue(it).ToString();
+                                <td>
+                                    @Html.ActionLink(propertyInfo.GetValue(it).ToString(),
+                                        "Edit", new
+                                        {
+                                            type = it.GetType().Name,
+                                            id=itemId,
+                                            name = propertyInfo.GetValue(it)
+                                        })
+                                </td>
+                                break;
+                            case "Characteristic":
+                                <td class="text-right">@(((Characteristic)propertyInfo.GetValue(it)).Name)</td>
+                                break;
+                            case "Product":
+                                <td class="text-right">@(((Product)propertyInfo.GetValue(it)).Name)</td>
+                                break;    
+                            default:
+                                if (propertyInfo.Name == "Id")
+                                {
+                                    itemId = (int)propertyInfo.GetValue(it);
+                                }
+                                <td class="text-right">@propertyInfo.GetValue(it)</td>
+                                break;
+                        }
+                    }
+                    @if (prop.Name != "OrderCouriers" && prop.Name != "OrderPickUps" && !IsHidden)
+                    {
+                        <td class="text-center">
+                            @using (Html.BeginForm("Delete", "Admin"))
+                            {
+                                @Html.Hidden("ProductId", itemId)
+                                @Html.Hidden("Type", prop.Name)
+                                @Html.Hidden("Name", name)
+                                <input type="submit"
+                                       class="btn btn-default btn-xs"
+                                       value="Delete"/>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+        </table>
+    </div>
+    @if (prop.Name != "Characteristics" && prop.Name != "CharValues" 
+         && prop.Name != "OrderCouriers" && prop.Name != "OrderPickUps")
+    {
+        <div class="panel-footer">
+            @Html.ActionLink($"Add {prop.Name}", "Create", null,
+                new {@class = "btn btn-default", propertyName = prop.Name})
+        </div>
+    }
+</div>
+}

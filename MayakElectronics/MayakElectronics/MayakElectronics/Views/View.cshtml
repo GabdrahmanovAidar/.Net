@@ -1,0 +1,50 @@
+﻿@page
+@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@model MayakElectronics.Views.View
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+<div>
+    
+    @{
+        var t = Model.GetType();
+        var props = t.GetProperties();
+        foreach (var prop in props)
+        {
+            var isRequired = prop.GetCustomAttributes<RequiredAttribute>() != null;
+            var val = prop.GetValue(Model);
+            <div>
+                <h4>@prop.Name
+                    @if (isRequired)
+                    {
+                        <span style="color: red">*</span>
+                    }
+                </h4>
+                <div>
+                    @if (prop.CanWrite)
+                    {
+                        @Html.Editor(prop.Name, val)
+                    }
+                    else
+                    {
+                        <div>@val</div>
+                    }
+                </div>
+            </div>
+
+        }
+    }
+    
+</div>
+</body>
+</html>

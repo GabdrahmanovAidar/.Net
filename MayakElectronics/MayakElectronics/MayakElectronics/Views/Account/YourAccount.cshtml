@@ -1,0 +1,63 @@
+﻿@model AccountViewModel
+    
+<h4>User name: @ViewBag.UserName</h4>
+@if (Model.orderCouriers.Count != 0 || Model.orderPickUp.Count != 0)
+{
+    <h3>Your Orders:</h3>
+    <table class="table">
+        <thead class="thead-inverse">
+            <tr>
+                <th>#</th>
+                <th>Date Order</th>
+                <th>Type Order</th>
+                <th>Items of order</th>
+                <th>Payment method</th>
+                <th>Status of order</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in Model.orderPickUp)
+            {
+                <tr>
+                    <th scope="row">1</th>
+                    <td>@order.OrderPlaced</td>
+                    <td>Pick up</td>
+                    <td>
+                        <ul>
+                            @foreach (var product in order.OrderDetails)
+                            {
+                                <li>
+                                    @Html.ActionLink($"{@product.Product.Name} ({@product.Amount})", "SingleProductDetails", "ProductDetails",
+                                        new {productId = product.ProductId})
+                                </li>
+                            }
+                        </ul>
+                    </td>
+                    <td>@order.PaymentMethod</td>
+                    <td>@order.Status</td>
+                </tr>
+            }
+            @foreach (var order in Model.orderCouriers)
+            {
+                <tr>
+                    <th scope="row">1</th>
+                    <td>@order.OrderPlaced</td>
+                    <td>Courier delivery</td>
+                    <td>
+                        <ul>
+                        @foreach (var product in order.OrderDetails)
+                        {
+                            <li>
+                                @Html.ActionLink($"{@product.Product.Name} ({@product.Amount})", "SingleProductDetails", "ProductDetails",
+                                    new {productId = product.ProductId})
+                            </li>
+                        }
+                        </ul>
+                    </td>
+                    <td>@order.PaymentMethod</td>
+                    <td>@order.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

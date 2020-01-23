@@ -1,0 +1,266 @@
+﻿@using ValueType = MayakElectronics.Models.ValueType
+@model List<Product>
+
+<!doctype html>
+<html class="no-js" lang="en">
+
+<body>
+
+<!-- Page Banner Section Start -->
+<div class="page-banner-section section">
+    <div class="page-banner-wrap row row-0 d-flex align-items-center ">
+
+        <!-- Page Banner -->
+        <div class="col-lg-4 col-12 order-lg-2 d-flex align-items-center justify-content-center">
+            <div class="page-banner">
+                <h1>SHOP Grid VIEW</h1>
+                <p>similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita</p>
+                <div class="breadcrumb">
+                    <ul>
+                        <li><a href="#">HOME</a></li>
+                        <li><a href="#">SHOP Grid VIEW</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banner -->
+        <div class="col-lg-4 col-md-6 col-12 order-lg-1">
+            <div class="banner"><a href="#"><img src="~/assets/images/banner/banner-15.jpg" alt="Banner"></a></div>
+        </div>
+
+        <!-- Banner -->
+        <div class="col-lg-4 col-md-6 col-12 order-lg-3">
+            <div class="banner"><a href="#"><img src="~/assets/images/banner/banner-14.jpg" alt="Banner"></a></div>
+        </div>
+
+    </div>
+</div><!-- Page Banner Section End -->
+
+<!-- Product Section Start -->
+<div class="product-section section mt-90 mb-90">
+    <div class="container">
+        <div class="row">
+
+            <div class="col-12">
+
+                <div class="row mb-50">
+                    <div class="col">
+                         <!-- Shop Top Bar Start -->
+                         <div class="shop-top-bar">
+                             @if ((Category) ViewData["Category"] != null)
+                             {
+                                 @using (Html.BeginForm("Filter", "Electronics", FormMethod.Post))
+                                 {
+                                     <!-- Product Short -->
+                                     <div class="product-short">
+                                         <p>Short by</p>
+                                         <select name="sortby" class="nice-select">
+                                             <option value="rating">Best rated</option>
+                                             <option value="price-asc">Price: low to high</option>
+                                             <option value="price-desc">Price: high to low</option>
+                                         </select>
+                                     </div>
+                                     <br/>
+                                     <br/>
+                                     <!-- Product Filter by Price -->
+                                     <div class="product-price">
+                                         <p><b>Price</b></p>
+                                         From <input type="number" name="from" min="0" value="@(ViewData["from"])"/> to
+                                         <input type="number" name="to" min="0" value="@(ViewData["to"])"/>
+                                     </div>
+                                     <br/>
+                                     <!-- Product Filter by Rate -->
+                                     <div class="rate">
+                                         <p><b>Rate More Then</b></p>
+                                         <input name="rate" type="number" min="0" max="5" value="@(ViewData["rate"])">
+                                         @*<select name="rate" class="browser-default custom-select" style="height: 30px" value="@(ViewData["rate"])">
+                                             <option value="5">5</option>
+                                             <option value="4">4</option>
+                                             <option value="3">3</option>
+                                             <option value="2">2</option>
+                                             <option value="1">1</option>
+                                             <option value="0">0</option>
+                                         </select>*@
+                                     </div>
+                                     <br/>
+                                     <!-- Filter by Characteristic -->
+                                     <div>
+                                         @{
+                                             int i = 0;
+                                             int j = 0;
+                                         }
+                                         @Html.Hidden("Category", ((Category)ViewData["Category"])?.Name)
+
+                                         @{
+                                             var charateristicses = ((Category)ViewData["Category"])?.Characteristics;
+                                         }
+                                         @if (charateristicses != null)
+                                         {
+                                             foreach (var charateristics in charateristicses)
+                                             {
+                                                 <p>
+                                                     <b>@charateristics.Name</b>
+                                                 </p>
+                                                 if (charateristics.Type == ValueType.@string)
+                                                 {
+                                                     var unique = new List<string>();
+                                                     foreach (var charValue in charateristics.CharValues)
+                                                     {
+                                                         if (unique.Contains(charValue.strValue))
+                                                         {
+                                                             continue;
+                                                         }
+                                                         unique.Add(charValue.strValue);
+                                                         @Html.Hidden($"CharValueStr[{i}].Characteristic", charValue.Characteristic.Name)
+                                                         @Html.Hidden($"CharValueStr[{i}].charValueStr", charValue.strValue)
+                                                         @Html.CheckBox($"CharValueStr[{i}].check", false,
+                                                             new {type = "checkbox"})
+                                                         <h5>@charValue.strValue</h5>
+                                                         i++;
+                                                     }
+                                                 }
+                                                 else
+                                                 {
+                                                     var unique = new List<decimal>();
+                                                     foreach (var charValue in charateristics.CharValues)
+                                                     {
+                                                         if (unique.Contains(charValue.numValue))
+                                                         {
+                                                             continue;
+                                                         }
+                                                         unique.Add(charValue.numValue);
+                                                         @Html.Hidden($"CharValueNum[{i}].Characteristic", charValue.Characteristic.Name)
+                                                         Html.CheckBox($"CharValueNum[{j}]", false);
+                                                         <h5>@charValue.numValue</h5>
+                                                         <br />
+                                                         j++;
+                                                     }
+                                                 }
+                                                 <br />
+                                             }
+                                         }
+                                     </div>
+                                     <input type="submit" value="Submit"/>
+                                 }
+                             }
+                         </div><!-- Shop Top Bar End -->
+
+                    </div>
+                </div>
+
+                <!-- Shop Product Wrap Start -->
+                <!-- Shop Product Wrap Start -->
+                <div class="shop-product-wrap grid row">
+
+                    @foreach (var product in Model)
+                    {
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-12 pb-30 pt-10">
+
+                            <!-- Product Start -->
+                            <div class="ee-product">
+
+                                <!-- Image -->
+                                <div class="image">
+                                    <a href="@Url.Action("SingleProductDetails", "ProductDetails", new { productId = product.Id })" class="img">
+                                        <img src="@Url.Action("GetImage", "ProductDetails", new {productId = product.Id})" width="120" height="300"/>
+                                    </a>
+
+                                    @* <a class="btn btn-warning" style="width:100%" asp-controller="Cart" asp-action="AddToCart" asp-route-productId="@product.Id">ADD TO CART</a> *@
+                                    @Html.ActionLink("Add To Cart", "AddToCart", "Cart", new
+                                    {
+                                        productId = product.Id
+                                    }, new {@class = "btn btn-warning", id = "myLink", style = "width:100%"})
+                                </div>
+
+                                <!-- Content -->
+                                <div class="content">
+                                    <div class="category-title">
+                                        <a href="#" class="cat">@product.Category.Name</a>
+                                        <h5 class="title">
+                                            <a href="/Electronics/SingleProduct">@product.Name</a>
+                                        </h5>
+                                    </div>
+
+                                    <div class="price-ratting">
+                                        <h5 class="price">@product.Price$</h5>
+                                        <div class="ratting">
+                                            @for (var j = 0; j < Math.Round(product.Rate); j++)
+                                            {
+                                                <i class="fa fa-star"></i>
+                                            }
+                                            @for (var j = 0; j < 5 - Math.Round(product.Rate); j++)
+                                            {
+                                                <i class="fa fa-star-o"></i>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div><!-- Product End -->
+                        </div>
+                    }
+
+                </div>
+                <!-- Shop Product Wrap End -->
+
+                @* <div class="row mt-30"> *@
+                @*     <div class="col"> *@
+                @* *@
+                @*         <ul class="pagination"> *@
+                @*             <li> *@
+                @*                 <a href="#"><i class="fa fa-angle-left"></i>Back</a> *@
+                @*             </li> *@
+                @*             <li> *@
+                @*                 <a href="#">1</a> *@
+                @*             </li> *@
+                @*             <li class="active"> *@
+                @*                 <a href="#">2</a> *@
+                @*             </li> *@
+                @*             <li> *@
+                @*                 <a href="#">3</a> *@
+                @*             </li> *@
+                @*             <li> - - - - - </li> *@
+                @*             <li> *@
+                @*                 <a href="#">18</a> *@
+                @*             </li> *@
+                @*             <li> *@
+                @*                 <a href="#">18</a> *@
+                @*             </li> *@
+                @*             <li> *@
+                @*                 <a href="#">20</a> *@
+                @*             </li> *@
+                @*             <li> *@
+                @*                 <a href="#">Next<i class="fa fa-angle-right"></i></a> *@
+                @*             </li> *@
+                @*         </ul> *@
+                @* *@
+                @*     </div> *@
+                @* </div> *@
+
+            </div>
+
+        </div>
+    </div>
+</div><!-- Feature Product Section End -->
+
+</body>
+
+</html>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script>
+$('.btn-warning').click(function(e){
+
+    e.preventDefault();
+    $.ajax({
+
+        url:$(this).attr("href"), // comma here instead of semicolon   
+        success: function(){
+        alert("Product successfully has been added to cart");  // or any other indication if you want to show
+        }
+
+    });
+
+});
+</script>

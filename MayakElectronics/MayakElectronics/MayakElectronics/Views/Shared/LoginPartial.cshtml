@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+
+@inject SignInManager<IdentityUser> SignInManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-controller="Admin" asp-action="Index"><i class="icofont icofont-login d-none"></i> <span>Admin panel</span></a>
+    }
+    <a asp-controller="Account" asp-action="YourAccount"><i class="icofont icofont-login d-none"></i> <span>Your account</span></a>
+    <form asp-area="" asp-controller="Account" asp-action="Logout" id="logoutForm"
+          method="post" class="navbar-right">
+        <a href="javascript:document.getElementById('logoutForm').submit()"><i class="icofont icofont-login d-none"></i><span>Logout</span></a>
+    </form>
+}
+else
+{
+    <a asp-controller="Account" asp-action="Register"><i class="icofont icofont-user-alt-7"></i> <span>Register</span></a>
+    <a asp-controller="Account" asp-action="Login"><i class="icofont icofont-login d-none"></i> <span>Login</span></a>
+}
