@@ -29,7 +29,7 @@ namespace MayakElectronics.Controllers
             
             return View(novelty);
         }
-
+        [Route("TrackOrder")]
         // GET: Electronics/TrackOrder/
         public ActionResult TrackOrder()
         {
@@ -43,6 +43,7 @@ namespace MayakElectronics.Controllers
         }
 
         // GET: Electronics/ShopGrid
+        [Route("/Shop")]
         public IActionResult ShopGrid(string categoryName)
         {
             var products = new List<Product>();
