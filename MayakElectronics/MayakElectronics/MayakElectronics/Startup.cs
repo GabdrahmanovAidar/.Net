@@ -12,6 +12,7 @@ using System;
 using System.Threading.Tasks;
 using StackExchange.Profiling;
 using StackExchange.Profiling.Storage;
+using MayakElectronics.Database;
 
 namespace MayakElectronics
 {
@@ -40,7 +41,7 @@ namespace MayakElectronics
             //            services.AddScoped<ISopedDependency, SopedDependency>();
             //            services.AddSingleton<ISingletonDependency, SingletonDependency>();
 
-            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            services.AddIdentity<AppIdentityUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 6;
                 options.Password.RequireLowercase = false;
@@ -91,7 +92,7 @@ namespace MayakElectronics
         {
 
             var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userManager = serviceProvider.GetRequiredService<UserManager<AppIdentityUser>>();
             Task<IdentityResult> roleResult;
             string email = "admin@mail.ru";
             string userName = "Admin";
@@ -109,12 +110,12 @@ namespace MayakElectronics
             //Check if the admin user exists and create it if not
             //Add to the Administrator role
 
-            Task<IdentityUser> testUser = userManager.FindByEmailAsync(email);
+            Task<AppIdentityUser> testUser = userManager.FindByEmailAsync(email);
             testUser.Wait();
 
             if (testUser.Result == null)
             {
-                var admin = new IdentityUser();
+                var admin = new AppIdentityUser();
                 admin.Email = email;
                 admin.UserName = userName;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using MayakElectronics.Database;
 using MayakElectronics.Models;
 using MayakElectronics.ViewModel;
 using Microsoft.AspNetCore.Identity;
@@ -13,11 +14,11 @@ namespace MayakElectronics.Controllers
     public class AccountController : Controller
     {
         private readonly ElectronicsDbContext _db;
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private Task<IdentityUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
+        private readonly UserManager<AppIdentityUser> _userManager;
+        private readonly SignInManager<AppIdentityUser> _signInManager;
+        private Task<AppIdentityUser> GetCurrentUserAsync() => _userManager.GetUserAsync(HttpContext.User);
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ElectronicsDbContext db)
+        public AccountController(UserManager<AppIdentityUser> userManager, SignInManager<AppIdentityUser> signInManager, ElectronicsDbContext db)
         {
             _db = db;
             _userManager = userManager;
@@ -65,7 +66,7 @@ namespace MayakElectronics.Controllers
         {
             if(ModelState.IsValid)
             {
-                var user = new IdentityUser() { UserName = registerViewModel.UserName, Email = registerViewModel.Email };
+                var user = new AppIdentityUser() { UserName = registerViewModel.UserName, Email = registerViewModel.Email };
                 var result = await _userManager.CreateAsync(user, registerViewModel.Password);
 
                 if (result.Succeeded)

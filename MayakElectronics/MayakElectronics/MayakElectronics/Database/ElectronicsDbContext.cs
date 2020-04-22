@@ -1,4 +1,5 @@
 ﻿﻿using MayakElectronics.Data.Models;
+using MayakElectronics.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
   using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
   namespace MayakElectronics.Models
 {
-    public class ElectronicsDbContext : IdentityDbContext<IdentityUser>
+    public class ElectronicsDbContext : IdentityDbContext<AppIdentityUser>
     {
         public static readonly ILoggerFactory LoggerFactory = 
             new LoggerFactory(new[] {

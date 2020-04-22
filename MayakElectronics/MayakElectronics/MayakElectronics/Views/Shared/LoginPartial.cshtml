@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Identity.EntityFrameworkCore
+@using MayakElectronics.Database
 
-@inject SignInManager<IdentityUser> SignInManager
+@inject SignInManager<AppIdentityUser> SignInManager
 
 @if (SignInManager.IsSignedIn(User))
 {
